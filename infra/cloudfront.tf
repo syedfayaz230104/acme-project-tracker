@@ -39,12 +39,9 @@ resource "aws_cloudfront_distribution" "this" {
     }
   }
 
-  custom_error_response {
-    error_code            = 404
-    error_caching_min_ttl = 300
-    response_code         = 200
-    response_page_path    = "/index.html"
-  }
+  # No SPA fallback (custom_error_response): it applies to every origin, so API 404s
+  # from Lambda would be rewritten into 200 + index.html. The frontend uses hash-based
+  # routing (/#/path), so it never needs server-side rewrites.
 
   # logging_config {
   #   include_cookies = false
