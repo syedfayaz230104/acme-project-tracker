@@ -1,35 +1,43 @@
-import { useState } from 'react'
-import reactLogo from '/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { lazy, Suspense } from 'react';
+import { Route, Routes } from 'react-router-dom';
+import { Box, CircularProgress } from '@mui/material';
+import AppLayout from './components/AppLayout';
+import ProtectedRoute from './components/ProtectedRoute';
+import LoginPage from './pages/LoginPage';
 
-function App() {
-  const [count, setCount] = useState(0)
+// Pages are code-split so the login screen loads fast.
+const DashboardPage = lazy(() => import('./pages/DashboardPage'));
+const ProjectsPage = lazy(() => import('./pages/ProjectsPage'));
+const ProjectDetailPage = lazy(() => import('./pages/ProjectDetailPage'));
+const DeliverablesPage = lazy(() => import('./pages/DeliverablesPage'));
+const DeliverableDetailPage = lazy(() => import('./pages/DeliverableDetailPage'));
+const ResourcesPage = lazy(() => import('./pages/ResourcesPage'));
+const BudgetPage = lazy(() => import('./pages/BudgetPage'));
+const UsersPage = lazy(() => import('./pages/UsersPage'));
+const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 
+const fallback = (
+  <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}><CircularProgress /></Box>
+);
+
+/** Route table. Everything except /login requires authentication. */
+export default function App() {
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <Suspense fallback={fallback}>
+      <Routes>
+        <Route path="/login" element={<LoginPage />} />
+        <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
+          <Route index element={<DashboardPage />} />
+          <Route path="projects" element={<ProjectsPage />} />
+          <Route path="projects/:id" element={<ProjectDetailPage />} />
+          <Route path="deliverables" element={<DeliverablesPage />} />
+          <Route path="deliverables/:id" element={<DeliverableDetailPage />} />
+          <Route path="resources" element={<ResourcesPage />} />
+          <Route path="budget" element={<BudgetPage />} />
+          <Route path="users" element={<ProtectedRoute action="manage_users"><UsersPage /></ProtectedRoute>} />
+          <Route path="*" element={<NotFoundPage />} />
+        </Route>
+      </Routes>
+    </Suspense>
+  );
 }
-
-export default App
