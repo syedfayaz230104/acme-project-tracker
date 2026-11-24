@@ -79,6 +79,8 @@ npm run lint           # ESLint
 npm test               # Vitest + React Testing Library
 npm run test:coverage  # with coverage
 npm run build          # production build to dist/
+npx playwright install chromium            # once
+E2E_BASE_URL=http://localhost:3000 npm run e2e   # end-to-end (Playwright)
 ```
 
 ## Usage

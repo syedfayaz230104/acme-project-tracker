@@ -259,3 +259,7 @@ tfplan
 
 # Locally vendored Lambda dependencies (LocalStack hot-reload)
 .vendor/
+
+# Playwright
+frontend/playwright-report/
+frontend/test-results/
